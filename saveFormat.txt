@@ -1,0 +1,14 @@
+playerName
+playerHealth
+playerMaxHealth
+playerAttack
+playerCoin
+playerExperience
+playerExperienceToLevelUp
+playerLevel
+playerMap
+playerStoryProgress
+playerUnlockedMap example: tutorital,town,cave
+playerLootBackpack example : old old bell/13;old new ring/5;adj adj name/totalPrice
+playerTasksProgress example : name,progress;slay chickens,0
+playerPotionBackpack example : name,count;mini health potion,0
