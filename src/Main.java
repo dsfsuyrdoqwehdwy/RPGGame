@@ -144,6 +144,27 @@ public class Main {
         }
     }
 
+    static int dialogueMenu(String[] option) {
+        String choiceString;
+        int choice;
+        while (true) {
+            printHyphenLine();
+            for (int i=0;i<option.length;i++) {
+                System.out.printf("%d.%s: ", i+1,option[i]);
+            }
+            System.out.print("> ");
+            choiceString = scanner.nextLine();
+            try {
+                choice = Integer.parseInt(choiceString);
+            } catch (NumberFormatException e) {
+                continue;
+            }
+            if (choice > 0 && choice <= option.length) {
+                return choice;
+            }
+        }
+    }
+
     static Player fightBoss(Player player) {
         Enemy boss;
         switch (player.map) {
