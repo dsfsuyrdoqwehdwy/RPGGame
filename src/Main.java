@@ -28,28 +28,16 @@ public class Main {
         Player player = null;
         System.out.println("Welcome to RPGGame!");
         do {
-            printEqualsLine();
-            System.out.println("Select an action you want to perform.");
-            System.out.println("1 - new game");
-            System.out.println("2 - load a save");
-            System.out.println("q - quit the game");
-            System.out.print("> ");
+            String answer;
 
-            String answer = scanner.nextLine();
-            if (answer.equalsIgnoreCase("q")) {
-                return;
-            }
-            printHyphenLine();
-            int choice;
-            try {
-                choice = Integer.parseInt(answer);
-            }
-            catch (NumberFormatException e) {
-                System.out.println("Enter a number!");
-                continue;
-            }
-
-            switch (choice) {
+            switch (dialogueMenu(new String[]{
+                    "new game",
+                    "load a save",
+            })) {
+                case -1 -> {
+                    return;
+                }
+                //new game
                 case 1 -> {
                     System.out.println("Enter your name(no spaces)");
                     System.out.println("Type 'q' to exit");
@@ -60,6 +48,7 @@ public class Main {
                         ifInLoopPregame = false;
                     }
                 }
+                //load save
                 case 2 -> {
                     System.out.println("Enter your save name(no spaces)");
                     System.out.println("Type 'q' to exit");
@@ -76,9 +65,6 @@ public class Main {
                         }
                     }
                 }
-                default -> {
-                    System.out.println("Enter a correct number!");
-                }
             }
         } while (ifInLoopPregame);
 
@@ -90,78 +76,93 @@ public class Main {
 
         while (true) {
             printEqualsLine();
-            System.out.println("Select an action you want to perform.");
-            System.out.println("1 - find and fight with a mob");
-            System.out.println("2 - print your stats");
-            System.out.println("3 - check backpack");
-            System.out.println("4 - change map");
-            System.out.println("5 - try to fight with the boss of this map");
-            System.out.println("6 - check tasks");
-            System.out.println("7 - talk with NPC");
-            System.out.println("8 - open the shop");
-            System.out.println("9 - open settings");
-            System.out.println("q - quit the game");
-            System.out.print("> ");
-
-            String answer = scanner.nextLine();
-            if (answer.equalsIgnoreCase("q")) {
-                return;
-            }
-            int answerAction = Integer.parseInt(answer);
-            printHyphenLine();
-            switch (answerAction) {
-                case 1 -> { // find and fight with a mob
+            System.out.println("Main menu");
+            switch (dialogueMenu(new String[]{
+                    "find and fight with a mob",
+                    "print your stats",
+                    "check backpack",
+                    "change map",
+                    "try to fight with the boss of this map",
+                    "check tasks",
+                    "talk with NPCs",
+                    "open shops",
+                    "open settings",
+            })) {
+                //quit
+                case -1 -> {
+                    return;
+                }
+                // find and fight with a mob
+                case 1 -> {
                     fightMob(player);
                 }
-                case 2 -> { // print your stats
+                // print your stats
+                case 2 -> {
                     printStats(player);
                 }
-                case 3 -> { // check backpack
+                // check backpack
+                case 3 -> {
                     checkBackpack(player);
                 }
-                case 4 -> { // change map
+                // change map
+                case 4 -> {
                     System.out.println("Coming soon");
                 }
-                case 5 -> { // try to fight with the boss of this map
+                // try to fight with the boss of this map
+                case 5 -> {
                     fightBoss(player);
                 }
-                case 6 -> { // check tasks
+                // check tasks
+                case 6 -> {
                     checkTasks(player);
                 }
-                case 7 -> { //talk with NPC
+                //talk with NPC
+                case 7 -> {
                     talkNPC(player);
                 }
-                case 8 -> { //shop
+                //shop
+                case 8 -> {
                     shop(player);
                 }
-                case 9 -> { // open settings
+                // open settings
+                case 9 -> {
                     player = settings(player);
-                }
-                default -> {
-                    System.out.println("Enter a right number!");
                 }
             }
         }
     }
 
     static int dialogueMenu(String[] option) {
-        String choiceString;
-        int choice;
-        while (true) {
+        try {
+            while (true) {
+                printHyphenLine();
+                System.out.println("Select an action you want to perform.");
+                System.out.println();
+                for (int i = 0; i < option.length; i++) {
+                    System.out.printf("%d. %s%n", i + 1, option[i]);
+                }
+                System.out.println("Type 'q' to exit");
+                System.out.print("> ");
+                String choiceString = scanner.nextLine().trim();
+                int choice;
+                if (choiceString.equalsIgnoreCase("q")) {
+                    return -1;
+                }
+                try {
+                    choice = Integer.parseInt(choiceString);
+                } catch (NumberFormatException e) {
+                    System.out.println("Enter a number!");
+                    continue;
+                }
+                if (choice > 0 && choice <= option.length) {
+                    return choice;
+                } else {
+                    System.out.println("Enter a number between 1 and " + (option.length));
+                }
+            }
+        }
+        finally {
             printHyphenLine();
-            for (int i=0;i<option.length;i++) {
-                System.out.printf("%d.%s: ", i+1,option[i]);
-            }
-            System.out.print("> ");
-            choiceString = scanner.nextLine();
-            try {
-                choice = Integer.parseInt(choiceString);
-            } catch (NumberFormatException e) {
-                continue;
-            }
-            if (choice > 0 && choice <= option.length) {
-                return choice;
-            }
         }
     }
 
@@ -436,19 +437,11 @@ public class Main {
         System.out.println("Potions backpack");
         System.out.println();
         printPotionBackpack(player.potionBackpack);
-        printHyphenLine();
-        System.out.println("1 - sell loots");
-        System.out.println("2 - set armors and weapons");
-        System.out.println("3 - use potions");
-        System.out.println("q - quit the dialogue");
-        System.out.print("> ");
-        String answer = scanner.nextLine();
-        if (answer.equalsIgnoreCase("q")) {
-            return player;
-        }
-        printHyphenLine();
-        int choice = Integer.parseInt(answer);
-        switch (choice) {
+        switch (dialogueMenu(new String[]{
+                "sell loots",
+                "set armors and weapons",
+                "use potions",
+        })) {
             case 1 -> {
                 player = sellLoots(player);
             }
