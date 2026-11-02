@@ -132,6 +132,14 @@ public class Main {
         }
     }
 
+    static void timeSleep(int milliSeconds) {
+        try {
+            Thread.sleep(milliSeconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     static int dialogueMenu(String[] option) {
         try {
             while (true) {
@@ -151,12 +159,14 @@ public class Main {
                 try {
                     choice = Integer.parseInt(choiceString);
                 } catch (NumberFormatException e) {
+                    printHyphenLine();
                     System.out.println("Enter a number!");
                     continue;
                 }
                 if (choice > 0 && choice <= option.length) {
                     return choice;
                 } else {
+                    printHyphenLine();
                     System.out.println("Enter a number between 1 and " + (option.length));
                 }
             }
@@ -320,9 +330,9 @@ public class Main {
         System.out.println("9.Basic structures");
         System.out.println("10.change the format of tasksProgress");
         printHyphenLine();
-        System.out.println("v0.1.1 10/31/2026");
+        System.out.println("v0.1.1 11/1/2026");
         System.out.println();
-        System.out.println("1.");
+        System.out.println("1.Add time sleep between each line of fight mobs and pregame story");
     }
     static Player talkNPC(Player player) {
         System.out.println("Choose an NPC to talk");
@@ -401,32 +411,47 @@ public class Main {
     }
 
     static void preGameStory(String name) {
+        String[] story = {
+                "In the year 3024, the world was consumed by the Great Static.",
+                "Reality glitched. The land of Varosia was shattered into maps,",
+                "and the creatures within it -- corrupted by wild code -- went mad.",
+                "-",
+                "Even the chickens. ESPECIALLY the chickens.",
+                "-",
+                "You wake up on a grassy field, head aching, memory blank.",
+                "The only thing you remember is your own name: " + name + ".",
+                "",
+                "An old scarecrow named Strawen creaks to life and speaks:",
+                "",
+                "  \"Ah... another wanderer pulled out of the Static.\"",
+                "  \"Welcome to the Tutorial Fields, " + name + ".\"",
+                "  \"Beyond this fence lies chaos -- cursed pigs, glitched beasts,",
+                "   and at the end of every map, a Boss who guards the way forward.\"",
+                "",
+                "  \"You look weak. Pathetic, even. Level 1? Ha!\"",
+                "  \"Start small. Fight the chickens. Collect their loot.\"",
+                "  \"Grow strong enough...\"",
+                "",
+                "  \"Oh, and one more thing, wanderer...\"",
+                "  \"Never trust a chicken...\"",
+                "=",
+                "=== QUEST RECEIVED: Slay 3 chickens! ===",
+                "=== The Tutorial Fields are now open. Good luck. ==="
+        };
+
         printEqualsLine();
-        System.out.println("In the year 3024, the world was consumed by the Great Static.");
-        System.out.println("Reality glitched. The land of Varosia was shattered into maps,");
-        System.out.println("and the creatures within it -- corrupted by wild code -- went mad.");
-        printHyphenLine();
-        System.out.println("Even the chickens. ESPECIALLY the chickens.");
-        printHyphenLine();
-        System.out.println("You wake up on a grassy field, head aching, memory blank.");
-        System.out.println("The only thing you remember is your own name: " + name + ".");
-        System.out.println();
-        System.out.println("An old scarecrow named Strawen creaks to life and speaks:");
-        System.out.println();
-        System.out.println("  \"Ah... another wanderer pulled out of the Static.\"");
-        System.out.println("  \"Welcome to the Tutorial Fields, " + name + ".\"");
-        System.out.println("  \"Beyond this fence lies chaos -- cursed pigs, glitched beasts,");
-        System.out.println("   and at the end of every map, a Boss who guards the way forward.\"");
-        System.out.println();
-        System.out.println("  \"You look weak. Pathetic, even. Level 1? Ha!\"");
-        System.out.println("  \"Start small. Fight the chickens. Collect their loot.\"");
-        System.out.println("  \"Grow strong enough...\"");
-        System.out.println();
-        System.out.println("  \"Oh, and one more thing, wanderer...\"");
-        System.out.println("  \"Never trust a chicken...\"");
-        printEqualsLine();
-        System.out.println("=== QUEST RECEIVED: Slay 3 chickens! ===");
-        System.out.println("=== The Tutorial Fields are now open. Good luck. ===");
+
+        for (String line : story) {
+            if (line.equals("=")) {
+                printEqualsLine();
+            } else if (line.equals("-")) {
+                printHyphenLine();
+            } else {
+                System.out.println(line);
+            }
+
+            timeSleep(500);
+        }
     }
 
     static Player checkBackpack(Player player) {
@@ -571,15 +596,18 @@ public class Main {
         System.out.println("Fighting start!");
         do {
             printHyphenLine();
+            timeSleep(100);
             enemy.health -= player.attack;
             System.out.printf("%s attack %s with %d damage! Now %s has %d health left!%n",
                     player.name, enemy.name, player.attack, enemy.name, enemy.health);
             if (enemy.health <= 0) {
                 break;
             }
+            timeSleep(200);
             player.health -= enemy.attack;
             System.out.printf("%s attack %s with %d damage! Now %s has %d health left!%n",
                     enemy.name, player.name, enemy.attack, player.name, player.health);
+            timeSleep(200);
         } while (player.health > 0);
 
         if (enemy.health <= 0) {
@@ -596,8 +624,7 @@ public class Main {
                 player.tasksProgress.get("slay chickens")[0] += 1;
             }
         } else {
-            System.out.println("You lost!");
-            player.health = (int)Math.round((double)player.maxHealth * 0.2);
+            player.die();
         }
         return player;
     }
