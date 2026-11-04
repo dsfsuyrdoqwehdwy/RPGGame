@@ -18,4 +18,7 @@ public class Enemy {
         this.lootPrice = lootPrice;
         this.tags = tags;
     }
+    public boolean ifHasTag(String tag){
+        return tags.contains(tag);
+    }
 }

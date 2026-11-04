@@ -95,9 +95,16 @@ public class Player {
     }
     void die() {
         System.out.println("You lost!");
-        this.map = "town";
-        System.out.println("You are sent back to the town");
-        this.health = (int) Math.round((double) this.maxHealth * 0.2);
-        System.out.printf("Your HP has been reduced to 20% of its maximum. Current HP: %d.",this.health,this.maxHealth);
+        if (this.unlockedMap.contains("town")) {
+            this.map = "town";
+            System.out.println("You are sent back to the town");
+        }
+        else {
+            this.map = "tutorial";
+            System.out.println("You are sent back to the tutorial");
+        }
+            this.health = (int) Math.round((double) this.maxHealth * 0.2);
+            System.out.printf("Your HP has been reduced to 20% of its maximum. Current HP: %d.", this.health, this.maxHealth);
+
     }
 }
