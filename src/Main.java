@@ -409,6 +409,7 @@ public class Main {
                                         System.out.println("try the 'change map'");
                                         player.unlockedMap.add("town");
                                         player.storyProgress++;
+                                        player.tasksProgress.get("kill big chicken")[0] = -1;
                                     }
                                     else if (player.tasksProgress.get("slay chickens")[0] == -1) {
                                         System.out.println("You have finished this task yet.");
