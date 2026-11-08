@@ -851,11 +851,11 @@ public class Main {
             StringBuilder potionLine = new StringBuilder();
             for (Map.Entry<String, Integer> entry : player.potionBackpack.entrySet()) {
                 if (potionLine.length() > 0) {
-                    tasksLine.append(";");
+                    potionLine.append(";");
                 }
-                tasksLine.append(entry.getKey()).append(",").append(entry.getValue());
+                potionLine.append(entry.getKey()).append(",").append(entry.getValue());
             }
-            bw.write(tasksLine.toString());
+            bw.write(potionLine.toString());
             bw.newLine();
         }
     }
