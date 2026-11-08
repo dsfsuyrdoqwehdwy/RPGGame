@@ -742,14 +742,6 @@ public class Main {
                 }
             }
 
-            /*
-            ArrayList<String> playerTasksProgressString = new ArrayList<>(Arrays.asList(br.readLine().split(",")));
-            ArrayList<Integer> playerTasksProgress = new ArrayList<>();
-            for (String item : playerTasksProgressString){
-                playerTasksProgress.add(Integer.parseInt(item));
-            }
-            */
-
             //taskName,progress needProgress;taskName2,progress2 needProgress2
             //if finished: -1 not started:-2
             Map<String, int[]> playerTasksProgress = new HashMap<>();
@@ -825,16 +817,6 @@ public class Main {
             }
             bw.write(lootLine.toString());
             bw.newLine();
-
-            /*
-            //tasksProgress: task1progress,task2progress
-            List<String> tasksProgressString = new ArrayList<>();
-            for (int v : player.tasksProgress) {
-                tasksProgressString.add(String.valueOf(v));
-            }
-            bw.write(String.join(",", tasksProgressString));
-            bw.newLine();
-             */
 
             // tasksProgress: taskName,progress;taskName2,progress2
             StringBuilder tasksLine = new StringBuilder();
