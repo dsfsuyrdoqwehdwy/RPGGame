@@ -727,7 +727,19 @@ public class Main {
             int playerLevel = Integer.parseInt(br.readLine());
             String playerMap = br.readLine();
             int playerStoryProgress = Integer.parseInt(br.readLine());
-            ArrayList<String> playerUnlockedMap = new ArrayList<>(Arrays.asList(br.readLine().split(",")));
+
+            //unlock maps
+            ArrayList<String> playerUnlockedMap = new ArrayList<>();
+
+            String unlockedMapLine = br.readLine();
+
+            if (unlockedMapLine != null && !unlockedMapLine.isBlank()) {
+                for (String map : unlockedMapLine.split(",")) {
+                    if (!map.isBlank()) {
+                        playerUnlockedMap.add(map.trim());
+                    }
+                }
+            }
 
             HashMap<String, Integer> playerLootBackpack = new HashMap<>();
             String line = br.readLine();
@@ -735,7 +747,7 @@ public class Main {
                 for (String item : line.split(";")) {
                     String[] parts = item.split("/", 2);
                     String name = parts[0];
-                    int totalPrice = Integer.parseInt(parts[1]);
+                    int totalPrice = Integer.parseInt(parts[1].trim());
                     playerLootBackpack.put(name, totalPrice);
                 }
             }
@@ -747,7 +759,7 @@ public class Main {
             if (tasksLine != null && !tasksLine.isBlank()) {
                 for (String item : tasksLine.split(";")) {
                     String[] parts = item.split(",", 2);
-                    if (parts.length == 2) {
+                    if (parts.length == 2 && !parts[0].isBlank()) {
                         String taskName = parts[0].trim();
                         String[] progressPart = parts[1].split(" ");
                         int[] progress = {Integer.parseInt(progressPart[0].trim()),Integer.parseInt(progressPart[1].trim())};
