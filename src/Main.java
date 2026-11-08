@@ -254,18 +254,10 @@ public class Main {
 
     static Player settings(Player player) {
         System.out.println("Settings");
-        Helper.printHyphenLine();
-        System.out.println("1 - saves");
-        System.out.println("2 - change logs");
-        System.out.println("q - quit the dialogue");
-        System.out.print("> ");
-        String answer = scanner.nextLine();
-        if (answer.equalsIgnoreCase("q")) {
-            return player;
-        }
-        int answerAction = Integer.parseInt(answer);
-        Helper.printHyphenLine();
-        switch (answerAction) {
+        switch (dialogueMenu(new String[]{
+                "saves",
+                "change logs"
+        })) {
             case 1 -> {
                 System.out.println("1 - save your games");
                 System.out.println("2 - load a save");
