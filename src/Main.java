@@ -642,7 +642,7 @@ public class Main {
         return player;
     }
 
-    static Enemy generateMobs(Player player) { // Enemy(name,level,health,attack,experience,lootPrice,ifBoss)
+    static Enemy generateMobs(Player player) { // Enemy(name,level,health,attack,experience,lootPrice,tags)
         switch (player.map) {
             case "tutorial" -> {
                 int randomMob = random.nextInt(1, 1001);
