@@ -325,6 +325,12 @@ public class Main {
         System.out.println("v0.1.1 11/1/2026");
         System.out.println();
         System.out.println("1.Add time sleep between each line of fight mobs and pregame story");
+        Helper.printHyphenLine();
+        System.out.println("v0.1.2 11/8/2026");
+        System.out.println();
+        System.out.println("1.boss big chicken and task");
+        System.out.println("2.fix some bugs");
+        System.out.println("3.delete the Herobrine");
     }
     static Player talkNPC(Player player) {
         System.out.println("Choose an NPC to talk");
