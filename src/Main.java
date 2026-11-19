@@ -786,9 +786,25 @@ public class Main {
                 }
             }
 
+            //settings: name,status/name2,status2
+            Map<String,String> settings = new  HashMap<>();
+            String settingsLine = br.readLine();
+            if (settingsLine != null && !settingsLine.isBlank()) {
+                for (String item : settingsLine.split(";")) {
+                    String[] parts = item.split(",", 2);
+                    if (parts.length == 2) {
+                        String settingName = parts[0].trim();
+                        String status = parts[1].trim();
+                        if (!settingName.isEmpty()) {
+                            settings.put(settingName, status);
+                        }
+                    }
+                }
+            }
+
             return new Player(playerName, playerLevel, playerHealth, playerMaxHealth, playerAttack,playerCoin,
                     playerExperience, playerExperienceToLevelUp, playerStoryProgress,
-                    playerUnlockedMap, playerMap, playerLootBackpack,playerTasksProgress,playerPotionBackpack);
+                    playerUnlockedMap, playerMap, playerLootBackpack,playerTasksProgress,playerPotionBackpack,settings);
         }
     }
 
@@ -848,6 +864,17 @@ public class Main {
                 potionLine.append(entry.getKey()).append(",").append(entry.getValue());
             }
             bw.write(potionLine.toString());
+            bw.newLine();
+
+            //settings: name,status/name2,status2
+            StringBuilder settingsLine = new StringBuilder();
+            for (Map.Entry<String, String> entry : player.settings.entrySet()) {
+                if (settingsLine.length() > 0) {
+                    settingsLine.append("/");
+                }
+                settingsLine.append(entry.getKey()).append(",").append(entry.getValue());
+            }
+            bw.write(settingsLine.toString());
             bw.newLine();
         }
     }

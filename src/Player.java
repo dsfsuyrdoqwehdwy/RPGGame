@@ -19,6 +19,7 @@ public class Player {
     //if finished: -1 not started:-2
     Map<String,int[]> tasksProgress = new HashMap();
     Map<String,Integer> potionBackpack;
+    Map<String,String> settings;
 
     Player(String name) {
         this.name = name;
@@ -36,11 +37,13 @@ public class Player {
         this.tasksProgress = new HashMap<>();
         this.tasksProgress.put("slay chickens", new int[]{-2, 3});
         this.potionBackpack = new HashMap<>();
+        this.settings = new HashMap<>();
     }
 
     Player(String name, int level, int health, int maxHealth, int attack,int coin, int experience,
            int experienceToLevelUp, int storyProgress, ArrayList<String> unlockedMap,
-           String map, Map<String, Integer> lootBackpack,Map<String,int[]> tasksProgress,Map<String,Integer> potionBackpack) {
+           String map, Map<String, Integer> lootBackpack,Map<String,int[]> tasksProgress,Map<String,Integer> potionBackpack,
+           Map<String,String> settings) {
         this.name = name;
         this.level = level;
         this.health = health;
@@ -55,6 +58,7 @@ public class Player {
         this.lootBackpack = lootBackpack;
         this.tasksProgress = tasksProgress;
         this.potionBackpack = potionBackpack;
+        this.settings = settings;
     }
     void gainExperience(int experience) {
         this.experience += experience;
