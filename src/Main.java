@@ -436,8 +436,8 @@ public class Main {
                                         System.out.println("There are more tasks in the future");
                                         System.out.println("Here are the rewards for you.");
                                         Helper.printHyphenLine();
-                                        System.out.println("You got 50 experiences!");
-                                        player.gainExperience(50);
+                                        System.out.println("You got " + Tasks.SLAY_CKICKENS_EXPERIENCE + " experiences!");
+                                        player.gainExperience(Tasks.SLAY_CKICKENS_EXPERIENCE);
                                         player.tasksProgress.get(Tasks.SLAY_CKICKENS)[0] = Tasks.FINISHED;
                                         player.storyProgress = StoryProgress.FINISHED_SLAY_CHICKEN;
                                         System.out.println();
