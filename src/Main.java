@@ -671,9 +671,8 @@ public class Main {
         System.out.printf("Your attack: %d ; Enemy attack: %d%n", player.attack, enemy.attack);
         Helper.printHyphenLine();
         System.out.println("Fighting start!");
-        do {
+        while (true) {
             Helper.printHyphenLine();
-            timeSleep(100);
             enemy.health -= player.attack;
             System.out.printf("%s attack %s with %d damage! Now %s has %d health left!%n",
                     player.name, enemy.name, player.attack, enemy.name, enemy.health);
@@ -681,11 +680,25 @@ public class Main {
                 break;
             }
             timeSleep(200);
+
             player.health -= enemy.attack;
             System.out.printf("%s attack %s with %d damage! Now %s has %d health left!%n",
                     enemy.name, player.name, enemy.attack, player.name, player.health);
+            if (player.health <= 0) {
+                break;
+            }
+            if (player.health <= player.maxHealth * 100 / Integer.parseInt(player.settings.getOrDefault(Settings.HEALTH_WARN_VALUE,"-1"))) {
+                String healthWarn = player.settings.getOrDefault(Settings.HEALTH_WARN,Settings.OFF);
+                if (healthWarn.equals(Settings.ON) || healthWarn.equals(Settings.AUTO)) {
+                    System.out.println("!!!Your Health is LOW!!!");
+                    if (healthWarn.equals(Settings.AUTO) && player.potionBackpack.get(Potions.MINI_HEALTH) > 0) {
+                        player.usePotion(Potions.MINI_HEALTH);
+                    }
+                }
+
+            }
             timeSleep(200);
-        } while (player.health > 0);
+        }
 
         if (enemy.health <= 0) {
             System.out.printf("%s win!%n", player.name);
