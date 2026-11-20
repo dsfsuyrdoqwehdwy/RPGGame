@@ -2,17 +2,15 @@ import java.util.Scanner;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
-import static java.lang.Math.*;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import constants.*;
 
 //TODO:
 // add arrayList : repeatableTaskProgress
@@ -39,7 +37,6 @@ public class Main {
                 }
                 //new game
                 case 1 -> {
-                    System.out.println("Enter your name(no spaces)");
                     System.out.println("Type 'q' to exit");
                     System.out.print("> ");
                     answer = scanner.nextLine();
@@ -50,7 +47,6 @@ public class Main {
                 }
                 //load save
                 case 2 -> {
-                    System.out.println("Enter your save name(no spaces)");
                     System.out.println("Type 'q' to exit");
                     System.out.print("> ");
                     answer = scanner.nextLine();
@@ -68,15 +64,14 @@ public class Main {
             }
         } while (ifInLoopPregame);
 
-        if (player.storyProgress == 1) {
+        if (player.storyProgress == StoryProgress.NEW) {
             preGameStory(player.name);
-            player.tasksProgress.put("slay chickens",new int[]{0,3});
-            player.storyProgress++;
+            player.tasksProgress.put(Tasks.SLAY_CKICKENS,new int[]{0, Tasks.SLAY_CKICKENS_REQUIRE});
+            player.storyProgress = StoryProgress.TALKED_WITH_STRAWEN;
         }
 
         while (true) {
             Helper.printEqualsLine();
-            System.out.println("Main menu");
             switch (dialogueMenu(new String[]{
                     "find and fight with a mob",
                     "print your stats",
@@ -176,17 +171,55 @@ public class Main {
         }
     }
 
+    static int dialogueMenu(int start,int end) {
+        try {
+            while (true) {
+                Helper.printHyphenLine();
+                System.out.printf("Enter a value between %d and %d(can be %d and %d)%n",start,end,start,end);
+                System.out.println("Type 'q' to exit");
+                System.out.print("> ");
+                String answer =  scanner.nextLine().trim();
+                if (answer.equalsIgnoreCase("q")) {
+                    return -1;
+                }
+                int value;
+                try {
+                    value = Integer.parseInt(answer);
+                }
+                catch (NumberFormatException e) {
+                    Helper.printHyphenLine();
+                    System.out.println("Enter a number!");
+                    continue;
+                }
+                if (value >= start && value <= end) {
+                    return value;
+                }
+                else {
+                    Helper.printHyphenLine();
+                    System.out.printf("Enter a number between %d and %d!%n",start,end);
+                }
+            }
+        }
+        finally {
+            Helper.printHyphenLine();
+        }
+    }
+
+    static int askPercentValue() {
+        return dialogueMenu(0,100);
+    }
+
     static Player fightBoss(Player player) {
         Enemy boss;
         switch (player.map) {
-            case "tutorial" -> {
-                boss = new Enemy("big chicken",10,100,1,1000,1000,new ArrayList<>(List.of("boss")));
+            case Maps.TUTORIAL -> {
+                boss = new Enemy(Bosses.BIG_CHICKEN,10,100,1,1000,1000,new ArrayList<>(List.of("boss")));
             }
-            case "town" -> {
+            case Maps.TOWN -> {
                 System.out.println("There is no boss here.");
                 return player;
             }
-            case "cave" -> {
+            case Maps.CAVE -> {
                 System.out.println("Coming soon");
                 return player;
             }
@@ -215,7 +248,7 @@ public class Main {
     static Player shop(Player player) {
         System.out.println("Shop");
         System.out.println();
-        System.out.println("1 - mini health potion(10 health regeneration)(50 coins)");
+        System.out.printf("1 - %s(%d health regeneration)(%d coins)%n",Potions.MINI_HEALTH,Potions.MINI_HEALTH_REGENERATION,Prices.MINI_HEALTH_POTION);
         System.out.println("q - quit the dialogue");
         System.out.print("> ");
         String answer = scanner.nextLine();
@@ -235,10 +268,10 @@ public class Main {
         Helper.printHyphenLine();
         switch (answerAction) {
             case 1 -> {
-                if (player.coin > count * 50) {
-                    player.coin -= count * 50;
-                    player.potionBackpack.put("mini health potion",player.potionBackpack.getOrDefault("mini health potion",0) + count);
-                    System.out.printf("You buy the %d mini health potion with %d coins.%n",count,count * 50);
+                if (player.coin > count * Prices.MINI_HEALTH_POTION) {
+                    player.coin -= count * Prices.MINI_HEALTH_POTION;
+                    player.potionBackpack.put(Potions.MINI_HEALTH,player.potionBackpack.getOrDefault(Potions.MINI_HEALTH,0) + count);
+                    System.out.printf("You buy the %d mini health potion with %d coins.%n",count,count * Prices.MINI_HEALTH_POTION);
                     System.out.printf("Now you have %d coins left.%n",player.coin);
                 }
                 else {
@@ -256,18 +289,14 @@ public class Main {
         System.out.println("Settings");
         switch (dialogueMenu(new String[]{
                 "saves",
-                "change logs"
+                "change logs",
+                "health warn"
         })) {
-            case 1 -> {
-                System.out.println("1 - save your games");
-                System.out.println("2 - load a save");
-                System.out.println("q - quit the dialogue");
-                System.out.print("> ");
-                String answerSave = scanner.nextLine();
-                if (answerSave.equalsIgnoreCase("q")) {
-                    return player;
-                }
-                int answerSaveAction = Integer.parseInt(answerSave);
+            case 1 -> { //saves
+                int answerSaveAction = dialogueMenu(new String[]{
+                        "save your games",
+                        "load a save"
+                });
                 switch (answerSaveAction) {
                     case 1 -> { //save your game
                         System.out.println("Enter save name(no spaces):");
@@ -291,16 +320,49 @@ public class Main {
                             System.out.println("Failed to load save: " + e.getMessage());
                         }
                     }
-                    default -> {
-                        System.out.println("Enter a right number!");
-                    }
                 }
             }
-            case 2 -> {
+            case 2 -> { //change logs
                 printChangeLogs();
                 }
-            default -> {
-                System.out.println("Enter a right number!");
+            case 3 -> {
+                System.out.println("Settings/Health Warn");
+                System.out.println();
+                System.out.printf("Now status: %s%n",player.settings.get("healthWarn"));
+                if (player.settings.get("healthWarn").equals(Settings.ON) || player.settings.get(Settings.HEALTH_WARN).equals(Settings.ON)) {
+                    System.out.printf("Warn value: %d%n",player.settings.getOrDefault(Settings.HEALTH_WARN_VALUE,"0"));
+                }
+                Helper.printHyphenLine();
+                switch (dialogueMenu(new String[]{
+                        "on/off",
+                        "health level to warn"
+                })) {
+                    case 1 -> {
+                        switch (dialogueMenu(new String[]{
+                                "on",
+                                "off",
+                                "auto use health potions when have"
+                        })) {
+                            case 1 -> {
+                                player.settings.put(Settings.HEALTH_WARN,Settings.ON);
+                            }
+                            case 2 -> {
+                                player.settings.put(Settings.HEALTH_WARN,Settings.OFF);
+                            }
+                            case 3 -> {
+                                player.settings.put(Settings.HEALTH_WARN,Settings.AUTO);
+                            }
+                        }
+                    }
+                    case 2 -> {
+                        System.out.println("Enter the value you want to warn");
+                        int value = askPercentValue();
+                        if (value == -1) {
+                            return player;
+                        }
+                        player.settings.put(Settings.HEALTH_WARN_VALUE,String.valueOf(value));
+                    }
+                }
             }
         }
         return player;
@@ -338,15 +400,15 @@ public class Main {
         Helper.printHyphenLine();
 
         switch (player.map) {
-            case "tutorial" -> {
+            case Maps.TUTORIAL -> {
                 List<String> dialogueMenuNPC =  new ArrayList<>();
-                if (player.storyProgress == 1) {
+                if (player.storyProgress == StoryProgress.NEW) {
                     System.out.println("You have not unlocked this");
                     return player;
                 }
                 System.out.println("Choose an NPC to talk");
-                if (player.storyProgress >= 2) {
-                    dialogueMenuNPC.add("Strawen");
+                if (player.storyProgress >= StoryProgress.TALKED_WITH_STRAWEN) {
+                    dialogueMenuNPC.add(NPCs.STRAWEN);
                 }
                 int choiceNPC = dialogueMenu(dialogueMenuNPC.toArray(new String[0]));
                 int choiceAction;
@@ -354,7 +416,7 @@ public class Main {
                     case 1 -> {
                             System.out.printf("Welcome %s.%n",player.name);
                             List<String> dialogueMenu = new ArrayList<>(Arrays.asList("ask about the task of slaying chickens"));
-                            if (player.storyProgress >= 3) {
+                            if (player.storyProgress >= StoryProgress.FINISHED_SLAY_CHICKEN) {
                                 dialogueMenu.add("ask about the task of beat the boss");
                             }
                             choiceAction = dialogueMenu(dialogueMenu.toArray(new String[0]));
@@ -363,21 +425,21 @@ public class Main {
                                     return player;
                                 }
                                 case 1 -> {
-                                    if (player.tasksProgress.get("slay chickens")[0] < player.tasksProgress.get("slay chickens")[1] &&
-                                            player.tasksProgress.get("slay chickens")[0] >= 0) {
+                                    if (player.tasksProgress.get(Tasks.SLAY_CKICKENS)[0] < player.tasksProgress.get(Tasks.SLAY_CKICKENS)[1] &&
+                                            player.tasksProgress.get(Tasks.SLAY_CKICKENS)[0] >= 0) {
                                         System.out.println("You have not finished this yet.");
                                         System.out.printf("You have %d left.%n",
-                                                player.tasksProgress.get("slay chickens")[1] - player.tasksProgress.get("slay chickens")[0]);
+                                                player.tasksProgress.get(Tasks.SLAY_CKICKENS)[1] - player.tasksProgress.get(Tasks.SLAY_CKICKENS)[0]);
                                     }
-                                    else if (player.tasksProgress.get("slay chickens")[0] == player.tasksProgress.get("slay chickens")[1]) {
+                                    else if (player.tasksProgress.get(Tasks.SLAY_CKICKENS)[0] == player.tasksProgress.get(Tasks.SLAY_CKICKENS)[1]) {
                                         System.out.println("Congratulations! You have finished the task.");
                                         System.out.println("There are more tasks in the future");
                                         System.out.println("Here are the rewards for you.");
                                         Helper.printHyphenLine();
                                         System.out.println("You got 50 experiences!");
                                         player.gainExperience(50);
-                                        player.tasksProgress.get("slay chickens")[0] = -1;
-                                        player.storyProgress++;
+                                        player.tasksProgress.get(Tasks.SLAY_CKICKENS)[0] = Tasks.FINISHED;
+                                        player.storyProgress = StoryProgress.FINISHED_SLAY_CHICKEN;
                                         System.out.println();
                                         timeSleep(1000);
                                         System.out.println("This seems you have enough strength");
@@ -389,10 +451,10 @@ public class Main {
                                         System.out.println("The big chicken...");
                                         timeSleep(1000);
                                         System.out.println("=== QUEST RECEIVED: Kill the big chicken! ===");
-                                        player.tasksProgress.put("kill big chicken",new int[]{0,1});
+                                        player.tasksProgress.put(Tasks.KILL_BIG_CHICKEN,new int[]{0,Tasks.KILL_BIG_CHICKEN_REQUIRE});
                                         timeSleep(1000);
                                     }
-                                    else if (player.tasksProgress.get("slay chickens")[0] == -1) {
+                                    else if (player.tasksProgress.get(Tasks.SLAY_CKICKENS)[0] == Tasks.FINISHED) {
                                         System.out.println("You have finished this task yet.");
                                     }
                                 }
@@ -401,15 +463,15 @@ public class Main {
                                         System.out.println("You have not finished this yet.");
                                         System.out.println("Go to 'try to fight with the boss of this map'");
                                     }
-                                    else if (player.tasksProgress.get("kill big chicken")[0] == player.tasksProgress.get("slay chickens")[1]) {
+                                    else if (player.tasksProgress.get("kill big chicken")[0] == player.tasksProgress.get("kill big chicken")[1]) {
                                         System.out.println("Congratulations! You have finished the task.");
                                         System.out.println("Now you unlocked the town");
                                         System.out.println("try the 'change map'");
-                                        player.unlockedMap.add("town");
-                                        player.storyProgress++;
-                                        player.tasksProgress.get("kill big chicken")[0] = -1;
+                                        player.unlockedMap.add(Maps.TOWN);
+                                        player.storyProgress = StoryProgress.FINISHED_KILL_BIG_CHICKEN;
+                                        player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[0] = Tasks.FINISHED;
                                     }
-                                    else if (player.tasksProgress.get("slay chickens")[0] == -1) {
+                                    else if (player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[0] == Tasks.FINISHED) {
                                         System.out.println("You have finished this task yet.");
                                     }
                                 }
@@ -549,9 +611,7 @@ public class Main {
         System.out.println();
         printLootBackpack(player.lootBackpack);
         Helper.printHyphenLine();
-        System.out.println("Choose one to sell");
         System.out.println("Type 'all' to sell all");
-        System.out.println("Type 'q' to exit");
         System.out.print("> ");
         String answerSell = scanner.nextLine();
         if (answerSell.equalsIgnoreCase("q")) {
@@ -564,7 +624,7 @@ public class Main {
             }
             player.lootBackpack.clear();
             System.out.println("You sold all.");
-            System.out.printf("Now you have %d coins.%n",player.coin);
+            System.out.printf("Now you have %d coins.%n", player.coin);
             return player;
         }
         boolean ifInBackpack = false;
@@ -577,11 +637,10 @@ public class Main {
         if (ifInBackpack) {
             int price = player.lootBackpack.remove(answerSell);
             player.coin += price;
-            System.out.printf("You sold %s with %d coins.%n",answerSell,price);
-            System.out.printf("Now you have %d coins.%n",player.coin);
-        }
-        else {
-            System.out.printf("%s not in backpack!%n",answerSell);
+            System.out.printf("You sold %s with %d coins.%n", answerSell, price);
+            System.out.printf("Now you have %d coins.%n", player.coin);
+        } else {
+            System.out.printf("%s not in backpack!%n", answerSell);
         }
         return player;
     }
@@ -599,6 +658,10 @@ public class Main {
 
     static Player fightMob(Player player) {
         Enemy enemy = generateMobs(player);
+        if (enemy == null) {
+            System.out.println("No mobs here!");
+            return player;
+        }
         return fightMob(player,enemy);
     }
 
@@ -632,15 +695,15 @@ public class Main {
 
             player.gainExperience(enemy.experience);
 
-            if (enemy.name.equals("chicken") &&
-                    0 <= player.tasksProgress.get("slay chickens")[0] &&
-                    player.tasksProgress.get("slay chickens")[0] < player.tasksProgress.get("slay chickens")[1]) {
-                player.tasksProgress.get("slay chickens")[0] += 1;
+            if (enemy.name.equals(Enemies.CHICKEN) &&
+                    0 <= player.tasksProgress.get(Tasks.SLAY_CKICKENS)[0] &&
+                    player.tasksProgress.get(Tasks.SLAY_CKICKENS)[0] < player.tasksProgress.get(Tasks.SLAY_CKICKENS)[1]) {
+                player.tasksProgress.get(Tasks.SLAY_CKICKENS)[0] += 1;
             }
-            else if (enemy.name.equals("big chicken") && enemy.ifHasTag("boss") &&
-            0 <= player.tasksProgress.get("kill big chicken")[0] &&
-            player.tasksProgress.get("kill big chicken")[0] < player.tasksProgress.get("kill big chicken")[1]) {
-                player.tasksProgress.get("kill big chicken")[0] += 1;
+            else if (enemy.name.equals(Bosses.BIG_CHICKEN) && enemy.ifHasTag(Enemy_tags.BOSS) &&
+            0 <= player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[0] &&
+            player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[0] < player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[1]) {
+                player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[0] += 1;
             }
         } else {
             player.die();
@@ -650,16 +713,19 @@ public class Main {
 
     static Enemy generateMobs(Player player) { // Enemy(name,level,health,attack,experience,lootPrice,tags)
         switch (player.map) {
-            case "tutorial" -> {
-                int randomMob = random.nextInt(1, 1001);
-                if (randomMob <= 999) {
-                    return new Enemy("chicken", 1, 5, 0, 5, 10 + random.nextInt(10), new ArrayList<>());
+            case Maps.TUTORIAL -> {
+                int randomMob = random.nextInt(1, Enemies.CHICKEN_CHANCE+Enemies.PIG_CHANCE+1);
+                if (randomMob <= Enemies.CHICKEN_CHANCE) {
+                    return new Enemy(Enemies.CHICKEN, 1, 5, 0, 5, 10 + random.nextInt(10), new ArrayList<>());
                 } else {
-                    return new Enemy("pig", 2, 10, 1, 100 + random.nextInt(50), 150 + random.nextInt(20), new ArrayList<>());
+                    return new Enemy(Enemies.PIG, 2, 10, 1, 100 + random.nextInt(50), 150 + random.nextInt(20), new ArrayList<>());
                     }
 
             }
-            case "cave" -> {
+            case Maps.TOWN -> {
+                return null;
+            }
+            case Maps.CAVE -> {
                 return null;
             }
             default -> {

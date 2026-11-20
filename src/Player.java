@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import constants.*;
 
 public class Player {
     String name;
@@ -15,9 +16,9 @@ public class Player {
     String map;
     int storyProgress;
     Map<String, Integer> lootBackpack; // lootName -> total price
-    List<String> unlockedMap = new ArrayList<>();
+    List<String> unlockedMap;
     //if finished: -1 not started:-2
-    Map<String,int[]> tasksProgress = new HashMap();
+    Map<String,int[]> tasksProgress;
     Map<String,Integer> potionBackpack;
     Map<String,String> settings;
 
@@ -31,13 +32,16 @@ public class Player {
         this.experience = 0;
         this.experienceToLevelUp = 50;
         this.storyProgress = 1;
-        this.unlockedMap.add("tutorial");
-        this.map = "tutorial";
+        this.unlockedMap = new ArrayList<>();
+        this.unlockedMap.add(Maps.TUTORIAL);
+        this.map = Maps.TUTORIAL;
         this.lootBackpack = new HashMap<>();
         this.tasksProgress = new HashMap<>();
-        this.tasksProgress.put("slay chickens", new int[]{-2, 3});
+        this.tasksProgress.put(Tasks.SLAY_CKICKENS, new int[]{Tasks.NOT_STARTED, Tasks.SLAY_CKICKENS_REQUIRE});
         this.potionBackpack = new HashMap<>();
         this.settings = new HashMap<>();
+        this.settings.put(Settings.HEALTH_WARN,Settings.OFF);
+        this.settings.put(Settings.HEALTH_WARN_VALUE,Constants.ZERO);
     }
 
     Player(String name, int level, int health, int maxHealth, int attack,int coin, int experience,
@@ -81,13 +85,14 @@ public class Player {
     }
     void usePotion(String potionName) {
         switch (potionName) {
-            case "mini health potion" -> {
-                if (this.potionBackpack.get("mini health potion") > 0) {
-                    this.health += 10;
+            case Potions.MINI_HEALTH -> {
+                if (this.potionBackpack.getOrDefault(Potions.MINI_HEALTH,0) > 0) {
+                    this.health += Potions.MINI_HEALTH_REGENERATION;
                     System.out.println("You use the mini health potion.");
                     if (this.health > this.maxHealth) {
                         System.out.printf("Health overflow the max health with %d health.%n", this.health - this.maxHealth);
                         this.health = this.maxHealth;
+                        this.potionBackpack.put(Potions.MINI_HEALTH,this.potionBackpack.getOrDefault(Potions.MINI_HEALTH,0)-1);
                     }
                     System.out.printf("Now health: %d%n", this.health);
                 }
@@ -99,16 +104,16 @@ public class Player {
     }
     void die() {
         System.out.println("You lost!");
-        if (this.unlockedMap.contains("town")) {
-            this.map = "town";
+        if (this.unlockedMap.contains(Maps.TOWN)) {
+            this.map = Maps.TOWN;
             System.out.println("You are sent back to the town");
         }
         else {
-            this.map = "tutorial";
+            this.map = Maps.TUTORIAL;
             System.out.println("You are sent back to the tutorial");
         }
-            this.health = (int) Math.round((double) this.maxHealth * 0.2);
-            System.out.printf("Your HP has been reduced to 20% of its maximum. Current HP: %d.", this.health, this.maxHealth);
+        this.health = (int) Math.round((double) this.maxHealth * 0.2);
+        System.out.printf("Your HP has been reduced to 20% of its maximum. Current HP: %d.", this.health, this.maxHealth);
 
     }
 }
