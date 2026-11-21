@@ -101,7 +101,7 @@ public class Main {
                 }
                 // change map
                 case 4 -> {
-                    System.out.println("Coming soon");
+                    changeMap(player);
                 }
                 // try to fight with the boss of this map
                 case 5 -> {
@@ -129,6 +129,12 @@ public class Main {
 
     static Player changeMap(Player player) {
         System.out.println("Select a map to change");
+        int choice = dialogueMenu(player.unlockedMap.toArray(new String[0]));
+        if (choice == -1) {
+            return player;
+        }
+        player.map = player.unlockedMap.get(choice-1);
+        System.out.printf("Your map changed to %s.%n",player.map);
         return player;
     }
 
