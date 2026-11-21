@@ -127,6 +127,11 @@ public class Main {
         }
     }
 
+    static Player changeMap(Player player) {
+        System.out.println("Select a map to change");
+        return player;
+    }
+
     static void timeSleep(int milliSeconds) {
         try {
             Thread.sleep(milliSeconds);
@@ -459,11 +464,11 @@ public class Main {
                                     }
                                 }
                                 case 2 -> {
-                                    if (player.tasksProgress.get("kill big chicken")[0] >= 0 && player.tasksProgress.get("kill big chicken")[0] < player.tasksProgress.get("slay chickens")[1]) {
+                                    if (player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[0] >= 0 && player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[0] < player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[1]) {
                                         System.out.println("You have not finished this yet.");
                                         System.out.println("Go to 'try to fight with the boss of this map'");
                                     }
-                                    else if (player.tasksProgress.get("kill big chicken")[0] == player.tasksProgress.get("kill big chicken")[1]) {
+                                    else if (player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[0] == player.tasksProgress.get(Tasks.KILL_BIG_CHICKEN)[1]) {
                                         System.out.println("Congratulations! You have finished the task.");
                                         System.out.println("Now you unlocked the town");
                                         System.out.println("try the 'change map'");
