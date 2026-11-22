@@ -15,7 +15,6 @@ import constants.*;
 //TODO:
 // add arrayList : repeatableTaskProgress
 // armors and weapons
-// add in "settings":when health lower than user input value,alert the user with "!!!Your health is below the value"
 
 public class Main {
     private static final Random random = new Random();
@@ -37,12 +36,16 @@ public class Main {
                 }
                 //new game
                 case 1 -> {
+                    System.out.println("Enter your name");
                     System.out.println("Type 'q' to exit");
                     System.out.print("> ");
                     answer = scanner.nextLine();
                     if (!answer.equalsIgnoreCase("q")) {
                         player = new Player(answer);
                         ifInLoopPregame = false;
+                    }
+                    else {
+                        return;
                     }
                 }
                 //load save
@@ -59,6 +62,9 @@ public class Main {
                         } catch (IOException | NumberFormatException e) {
                             System.out.println("Failed to load save: " + e.getMessage());
                         }
+                    }
+                    else {
+                        return;
                     }
                 }
             }
@@ -698,7 +704,7 @@ public class Main {
             if (player.health <= 0) {
                 break;
             }
-            if (player.health <= player.maxHealth * 100 / Integer.parseInt(player.settings.getOrDefault(Settings.HEALTH_WARN_VALUE,"-1"))) {
+            if (player.health <= player.maxHealth * Integer.parseInt(player.settings.getOrDefault(Settings.HEALTH_WARN_VALUE,"-1")) / 100) {
                 String healthWarn = player.settings.getOrDefault(Settings.HEALTH_WARN,Settings.OFF);
                 if (healthWarn.equals(Settings.ON) || healthWarn.equals(Settings.AUTO)) {
                     System.out.println("!!!Your Health is LOW!!!");

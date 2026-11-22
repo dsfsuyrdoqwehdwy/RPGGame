@@ -22,6 +22,10 @@ public class Player {
     Map<String,Integer> potionBackpack;
     Map<String,String> settings;
 
+    Player() {
+        this("Unnamed");
+    }
+
     Player(String name) {
         this.name = name;
         this.level = 1;
@@ -113,7 +117,6 @@ public class Player {
             System.out.println("You are sent back to the tutorial");
         }
         this.health = (int) Math.round((double) this.maxHealth * 0.2);
-        System.out.printf("Your HP has been reduced to 20% of its maximum. Current HP: %d.", this.health, this.maxHealth);
-
+        System.out.printf("Your HP has been reduced to 20%% of its maximum. Current HP: %d.%n", this.health, this.maxHealth);
     }
 }
